@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
-# If there is any parameter name
-# then we will interpretate to debug
+# To call this script on cron
+#
+#    $> sudo crontab -e
+# 
+# Add the following line
+#
+#    * * * * * /home/e/wrk/isep/c1-5.sh > /tmp/password_notices.log
+#
+# To verify previous command
+#
+#  $> sudo crontab -l
+#
+# EXTRA: Call this script with any parameter to activate debug trace.
+#
+#    e.g: ./c1-5.sh TRACE
+#
 TRACE="$1"
-
-# NOTE: Used for debug. A kind of trace
 if [ -n "$TRACE" ]
 then
 	echo set TRACE
@@ -72,8 +84,6 @@ cat /etc/shadow | while read line; do
 	#echo "secondsToWarning=$secondsToWarning"
 	
 	# NOTE: Use (()) instead of [] because we are evaluating number expressions?
-	# NOTE: We could use [] but with "-le" instead of "<="
-	# NOTE: Missing validation by one type of error
 	
 	if (( $secondsToExpire <= $secondsToWarning ))
 	then
