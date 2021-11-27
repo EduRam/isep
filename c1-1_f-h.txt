@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -x
+
+#$> sudo groupadd testgroup1
+#
+#$> sudo groupadd testgroup2
+#
+#$> sudo groupadd testgroup3
+#
+#$> sudo useradd testeusr1 -g testgroup1 -G testgroup2,testgroup3
+#
+#$> sudo cat /etc/group
+#
+#$> sudo cat /etc/passwd
+#
+#$> id testeusr1
+#
+#$> su - testeusr1
+# [testeusr1@nuc ~]$ touch test.txt
+#
+# [testeusr1@nuc ~]$ ll
+# total 0
+# -rw-r--r--. 1 testeusr1 testgroup1 0 nov 27 19:20 test.txt
+
+
+# f. Change file’s group ownership to one of user’s secondary groups.
+
+[testeusr1@nuc ~]$ chown :testgroup2 test.txt
+
+[testeusr1@nuc ~]$ ll
+total 0
+-rw-r--r--. 1 testeusr1 testgroup2 0 nov 27 19:20 test.txt
+
+
+# g. Change the permissions of the file as follows:
+## User should be able to read and write
+## Group should be able to read and write.
+## Others should not be granted any permission.
+
+[testeusr1@nuc ~]$ chmod 660 test.txt
+
+# h. Verify file permission and ownership.
+
+[testeusr1@nuc ~]$ ll
+total 0
+-rw-rw----. 1 testeusr1 testgroup2 0 nov 27 19:20 test.txt
+
