@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# To call this script on cron
+# To setup this script on cron
+# Why sudo ?
 #
 #    $> sudo crontab -e
 # 
@@ -12,9 +13,13 @@
 #
 #  $> sudo crontab -l
 #
-# EXTRA: Call this script with any parameter to activate debug trace.
 #
-#    e.g: ./c1-5.sh TRACE
+# To run this script.
+#
+#  $> sudo ./c1-5.sh 
+#
+# To run on TRACE mode
+#
 #
 TRACE="$1"
 if [ -n "$TRACE" ]
@@ -23,29 +28,27 @@ then
 	set -x 
 fi
 
-# get current date as seconds since Unix Epoch Time
-# Note: we could convert here to days and always calculate in days later
-currentTimeInSecondsSince1970=$(date +%s)
-#echo "currentTimeInSecondsSince1970=$currentTimeInSecondsSince1970"
 
 
 # number of seconds in a day
 # 24h x 60min x 60sec
 # this will be use later to convert days to seconds.
-dayseconds=$((24 * 60 * 60)) 
+SECONDS_IN_A_DAY=$((24 * 60 * 60)) 
 
-# bash recipe - set variable "line" from each line on file shadow
+
+
+# 5 days to warn before passwd expires
+WARN_BEFORE_N_DAYS=5
+
+
+
+# get current date as seconds since Unix Epoch Time
+# Note: we could convert here to days and always calculate in days later
+current_time_in_seconds_since_1970=$(date +%s)
+
+
+# bash recipe - set variable "line" from each line on file shadowll
 cat /etc/shadow | while read line; do
-
-	# debug
-	if [ -n "$TRACE" ]
-	then
-		echo ""
-		echo ""
-		echo ""
-		echo ""
-		echo "LINE: $line"
-	fi
 
  
 	# bash recipe - parse string on variable line, seperated by ":" and set each on an array
@@ -58,43 +61,34 @@ cat /etc/shadow | while read line; do
 	
 
 	username=${array[0]}
-	passwdChangeDaySince1970=${array[2]}
-	passwdNumberOfDaysToExpire=${array[4]}
+	passwd_change_day_since_1970=${array[2]}
+	passwd_number_of_days_to_expire=${array[4]}
 
-	# if passwdNumberOfDaysToExpire is empty (not defined) 
+	# if passwd_number_of_days_to_expire is empty (not defined) 
 	# do not continue in this line
-	if [ -z "$passwdNumberOfDaysToExpire" ]
+	if [ -z "$passwd_number_of_days_to_expire" ]
 	then
 		continue  
 	fi	
 	
-	passwdExpirationDaySince1970=$((passwdChangeDaySince1970 + passwdNumberOfDaysToExpire))
-	#echo "passwdExpirationDaySince1970=$passwdExpirationDaySince1970"
+	passwd_expiration_day_since_1970=$((passwd_change_day_since_1970 + passwd_number_of_days_to_expire))
+	#echo "passwd_expiration_day_since_1970=$passwd_expiration_day_since_1970"
 	
 
-	passwdExpirationSecondsSince1970=$((passwdExpirationDaySince1970 * dayseconds))
-	#echo "passwdExpirationSecondsSince1970=$passwdExpirationSecondsSince1970"
+	passwd_expiration_seconds_since_1970=$((passwd_expiration_day_since_1970 * SECONDS_IN_A_DAY))
+	#echo "passwd_expiration_seconds_since_1970=$passwd_expiration_seconds_since_1970"
 
 	# difference in seconds between current date and expiration date
-	secondsToExpire=$((passwdExpirationSecondsSince1970 - currentTimeInSecondsSince1970))
-	#echo "secondsToExpire=$secondsToExpire"
+	seconds_to_expire=$((passwd_expiration_seconds_since_1970 - current_time_in_seconds_since_1970))
+	#echo "seconds_to_expire=$seconds_to_expire"
 	
 	# seconds to warning expiration date 5 days and convert to seconds
-	secondsToWarning=$((5 * dayseconds))
-	#echo "secondsToWarning=$secondsToWarning"
+	seconds_to_warning=$((WARN_BEFORE_N_DAYS * SECONDS_IN_A_DAY))
+	#echo "seconds_to_warning=$seconds_to_warning"
 	
-	# NOTE: Use (()) instead of [] because we are evaluating number expressions?
-	
-	if (( $secondsToExpire <= $secondsToWarning ))
+	if [[ $seconds_to_expire -le $seconds_to_warning ]]
 	then
-	
 		echo $username
-		
-		if [ -n "$TRACE" ]
-		then
-			echo "FOUND ... continue to next line."
-		fi
-
 	fi
   
 done
