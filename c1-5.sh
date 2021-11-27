@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # To setup this script on cron
-# Why sudo ?
 #
 #    $> sudo crontab -e
 # 
@@ -14,9 +13,11 @@
 #  $> sudo crontab -l
 #
 #
-# To run this script.
+# To run this script "by hand".
 #
+#  $> sudo ./c1-5_setup.sh 
 #  $> sudo ./c1-5.sh 
+#  $> sudo ./c1-5_teardown.sh 
 #
 # To run on TRACE mode
 #
