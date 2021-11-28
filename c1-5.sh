@@ -22,19 +22,39 @@
 # To run on TRACE mode
 #
 #
+
+OPTIONAL_APP_NUM_ARGS=1
+
 APP_ARGS=($@)
 
-if [[ ${APP_ARGS[0]} == "TRACE" ]]
-then 
-	echo set TRACE 
-	set -x 
+
+if [[ $# -gt $OPTIONAL_APP_NUM_ARGS ]]
+then
+	echo "Error. Too many arguments."
+	echo "Script runs without arguments, or optionally, with TRACE argument."
+	exit 1
 fi
+
+if [[ ${#APP_ARGS[@]} -gt 0 ]]
+then
+	if [[ ${APP_ARGS[0]} == "TRACE" ]]
+	then 
+		echo "Set TRACE mode. Used for debug."
+		set -x 
+	else
+		echo "Error. Unrecognized argument ${APP_ARGS[0]}"
+		echo "Script runs without arguments, or optionally, with TRACE argument."
+		exit 1
+	fi
+fi
+
+
 
 
 # this script must run a root
 if [[ "$EUID" -ne 0 ]]
   then echo "Please run this script as root"
-  exit
+  exit 1 
 fi
 
 
