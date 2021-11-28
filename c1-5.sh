@@ -6,7 +6,7 @@
 # 
 # Add the following line
 #
-#    * * * * * /home/e/wrk/isep/c1-5.sh > /tmp/password_notices.log
+#    30 23 * * * /home/e/wrk/isep/c1-5.sh > /tmp/password_notices.log
 #
 # To verify previous command
 #
@@ -29,6 +29,12 @@ then
 	set -x 
 fi
 
+
+# this script must run a root
+if [[ "$EUID" -ne 0 ]]
+  then echo "Please run this script as root"
+  exit
+fi
 
 
 # number of seconds in a day
