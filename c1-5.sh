@@ -22,10 +22,11 @@
 # To run on TRACE mode
 #
 #
-TRACE="$1"
-if [ -n "$TRACE" ]
-then
-	echo set TRACE
+APP_ARGS=($@)
+
+if [[ ${APP_ARGS[0]} == "TRACE" ]]
+then 
+	echo set TRACE 
 	set -x 
 fi
 
