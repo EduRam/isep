@@ -32,3 +32,8 @@ touch file_004
 chmod 004 file_004
 
 cd ..
+
+ls -l c1-3_test_dir
+
+echo ""
+echo ""
