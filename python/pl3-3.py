@@ -34,6 +34,8 @@ at index {} and end index: {}
 
 if (isPalindrome):
     print("Word " + str(myInputName) + " is palindrome.")
+else:
+    print("Word " + str(myInputName) + " is not palindrome.")
 
 
 
