@@ -1,21 +1,21 @@
 #
 
-myInputName = input("Input name: ")
+my_input_name = input("Input name: ")
 
-myDict = dict()
+my_map = dict()
 
-for myLetter in myInputName:
-    print(myLetter)
+for my_letter in my_input_name:
+    print(my_letter)
 
-    if myLetter in myDict:
+    if my_letter in my_map:
 
-        frequencyValue = myDict[myLetter] 
-        myDict[myLetter] = frequencyValue + 1
+        frequency = my_map[my_letter] 
+        my_map[my_letter] = frequency + 1
         
     else:
-        myDict[myLetter] = 1
+        my_map[my_letter] = 1
 
-print(myDict)
+print(my_map)
 
 
 

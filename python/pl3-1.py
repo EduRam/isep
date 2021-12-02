@@ -1,14 +1,14 @@
 # comment
 import math
 
-myInputValueI = int(input("Input value: "))
+my_input_value = int(input("Input value: "))
 
-sqrootF = math.sqrt(myInputValueI)
+sqroot = math.sqrt(my_input_value)
 
-isSqrootInteger = sqrootF.is_integer()
+is_sqroot = sqroot.is_integer()
 
-if (isSqrootInteger):
+if (is_sqroot):
      msg = "Value: {} is the perfect square of: {} "
-     print(msg.format(sqrootF, myInputValueI)) 
+     print(msg.format(sqroot, my_input_value)) 
 else:
-     print("Value: " + str(myInputValueI) + " doest not have a perfect square" ) 
+     print("Value: " + str(my_input_value) + " doest not have a perfect square" ) 

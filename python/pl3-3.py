@@ -1,7 +1,7 @@
 #
 
-myInputName = input("Input name: ")
-#myInputName = "raceacar"
+my_input_name = input("Input name: ")
+#my_input_name = "raceacar"
 
 
 # i = 0
@@ -11,31 +11,31 @@ myInputName = input("Input name: ")
 # for i in range(len(myInputName))
 #       myLetter = myInputName[i]
 
-isPalindrome = True
-endLen = len(myInputName)-1
-for index, myLetter in enumerate(myInputName):
+is_palindrome = True
+end_length = len(my_input_name)-1
+for index, my_letter in enumerate(my_input_name):
 
-    endIndex = endLen - index;
-    if (index > endIndex):
+    end_index = end_length - index;
+    if (index > end_index):
         print(str("Reached midle at index: {}").format(index))
         break
 
-    endLetter = myInputName[endIndex]
-    print(str("Start letter:{}  End letter:{}").format(myLetter, endLetter) ) 
+    end_letter = my_input_name[end_index]
+    print(str("Start letter:{}  End letter:{}").format(my_letter, end_letter) ) 
 
-    if (myLetter != endLetter):
+    if (my_letter != end_letter):
         print(str("""\
 ERROR: Mismatch letter: {} with {}
 at index {} and end index: {} 
-        """).format(myLetter, endLetter, index, endIndex))
-        isPalindrome = False
+        """).format(my_letter, end_letter, index, end_index))
+        is_palindrome = False
         break
 
 
-if (isPalindrome):
-    print("Word " + str(myInputName) + " is palindrome.")
+if (is_palindrome):
+    print("Word " + str(my_input_name) + " is palindrome.")
 else:
-    print("Word " + str(myInputName) + " is not palindrome.")
+    print("Word " + str(my_input_name) + " is not palindrome.")
 
 
 
