@@ -1,5 +1,8 @@
-word = "1racecar9"
+word = "racecar"
 
 inv_word = word[::-1]
 
-print(inv_word)
+if (inv_word == word):
+    print("Is palindrome")
+else:
+    print("Is NOT palindrome")

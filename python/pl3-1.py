@@ -5,6 +5,9 @@ my_input_value = int(input("Input value: "))
 
 sqroot = math.sqrt(my_input_value)
 
+# or
+# if int(sqroot + 0.5) ** 2 == number
+
 is_sqroot = sqroot.is_integer()
 
 if (is_sqroot):
