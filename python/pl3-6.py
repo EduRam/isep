@@ -52,5 +52,5 @@ while (is_to_repeat):
     print("Number of tries was: {}".format(user_tries))
 
     is_to_repeat = bool(query_yes_no("Try again ?", default="yes"))
-    print(is_to_repeat)
 
+print("End!")
