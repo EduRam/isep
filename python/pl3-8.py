@@ -5,7 +5,9 @@ def request_passwd():
 
     # Source:
     # https://docs.python.org/3/library/secrets.html#recipes-and-best-practices
-    alphabet = string.ascii_letters + string.digits + string.punctuation + string.whitespace
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+
+    
 
     while True:
         passwd = ''.join(secrets.choice(alphabet) for i in range(10))
