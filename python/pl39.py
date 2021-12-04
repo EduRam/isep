@@ -1,4 +1,5 @@
 import csv
+import json
 
 FILENAME_CSV = 'pl39.csv'
 
@@ -63,21 +64,29 @@ def read_csv_example_file():
                 current_dep_list.append(emp_dict)
             
     return department_dict
-            
 
+
+def save_to_json(dep_dict):
+
+    has_sucess = False
+    with open('pl39.json', 'w') as fp:
+        json.dump(dep_dict, fp, indent=4, sort_keys=True)
+        has_sucess = True
+    return has_sucess
 
 
 has_sucess = create_csv_example_file()
 if not has_sucess:
-    print("Error ocurred creating json file")
+    print("Error!")
     exit(1)
-
 
 dep_dict = read_csv_example_file()
 
-print(dep_dict)
+has_sucess = save_to_json(dep_dict)
 
-
-
-
+if has_sucess:
+    print("End!")
+else:
+    print("Error!")
+    exit(1)
 
