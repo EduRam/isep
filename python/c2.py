@@ -82,6 +82,7 @@ def do_action_register_users():
         inquirer.Text('password',   message="Password ?", validate=passwd_check,)
     ]    
 
+    print("\n\n")
     answers = inquirer.prompt(questions)
     pprint(answers)
 
@@ -106,11 +107,44 @@ def do_action_delete_users():
         ),
     ]
 
+    print("\n\n")
     answers = inquirer.prompt(questions)
     action = answers['action']
     model.del_user(action)
 
     return
+
+
+def do_action_register_rsrc():
+
+    questions = [
+        inquirer.Text('rsrc',       message="Resource name ?"),
+        inquirer.Text('url',        message="URL ?"),
+    ]    
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    pprint(answers)
+
+    model.add_rsrc(answers['rsrc'], answers['url'])
+
+    return
+
+
+def do_action_delete_rsrc():
+    print("do_action_delete_rsrc - Not implemented yet!")
+    return
+
+
+def do_action_register_role():
+    print("do_action_register_role - Not implemented yet!")
+    return
+
+
+def do_action_delete_role():
+    print("do_action_delete_role - Not implemented yet!")
+    return
+
 
 
 def init():
@@ -145,6 +179,7 @@ def main():
 
     while True:
 
+        print("\n\n")
         answers = inquirer.prompt(questions)
         action = answers['action']
         if action == 'Exit':
@@ -157,6 +192,14 @@ def main():
             do_action_register_users()
         elif action.startswith('2'):
             do_action_delete_users()
+        elif action.startswith('3'):
+            do_action_register_rsrc()
+        elif action.startswith('4'):
+            do_action_delete_rsrc()
+        elif action.startswith('5'):
+            do_action_register_role()
+        elif action.startswith('6'):
+            do_action_delete_role()
         else:
             print("Not implemented yet")
             exit(1)
