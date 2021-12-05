@@ -55,6 +55,7 @@ def create_bootstrap():
         json.dump(map_roles_to_rsrc, fp, indent=4, sort_keys=True)
 
 
+
 # classic main entry point
 if __name__ == '__main__':
     create_bootstrap()
