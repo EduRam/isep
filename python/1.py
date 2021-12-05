@@ -4,7 +4,11 @@ import inquirer
 def do_action_list():
     print("List")
 
-    
+
+def do_action_exit():
+    print("Exit!")
+    exit(0)
+
 
 def main():
 
@@ -34,10 +38,12 @@ def main():
 
         action = answers['action']
         if action == 'Exit':
-            print("Exit!")
-            exit(0)
-        else if action.startswith('0')
+            do_action_exit()
+        elif action.startswith('0'):
             do_action_list()
+        else:
+            print("Not implemented yet")
+            exit(1)
 
 
 # classic main entry point
