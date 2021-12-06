@@ -29,7 +29,7 @@ def do_action_list():
         if action == 'Back':
             break
         elif action.startswith('1'):
-            print(model.user_dict)
+            print(model.users_dict)
         elif action.startswith('2'):
             print(model.resources_dict)
         elif action.startswith('3'):
@@ -101,7 +101,7 @@ def do_action_delete_users():
         inquirer.List(
             'action', 
             message="Select user to delete: ?", 
-            choices=model.user_dict.keys(), 
+            choices=model.users_dict.keys(), 
         ),
     ]
 
@@ -200,7 +200,7 @@ def do_action_update_user_roles():
         inquirer.List(
             'user_email', 
             message="Select user email: ", 
-            choices=model.user_dict.keys(), 
+            choices=model.users_dict.keys(), 
         ),
     ]
 
@@ -244,12 +244,12 @@ def do_action_update_roles_resources():
     role_selected = answers['role']
 
     current_role_resources = model.get_role_resources(role_selected)
-    all_resources = model.roles_dict.keys();
+    all_resources = model.resources_dict.keys();
 
     questions_roles = [
         inquirer.Checkbox(
             role_selected,
-            message = "Roles: ",
+            message = "Resources: ",
             choices = all_resources,
             default = current_role_resources,
         ),
@@ -257,7 +257,7 @@ def do_action_update_roles_resources():
 
     answers = inquirer.prompt(questions_roles)
     #pprint(answers)
-    model.map_roles_to_rsrc.update(answers)
+    model.map_role_to_resources.update(answers)
     return
 
 
