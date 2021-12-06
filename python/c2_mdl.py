@@ -14,10 +14,22 @@ class Model:
         self.map_roles_to_rsrc_filename = "_map_roles_to_rsrc.json"
 
         self.map_roles_to_rsrc = dict()
-        self.map_roles_to_user = dict()
+        self.map_user_to_roles = dict()
         self.roles_dict = dict()
         self.resources_dict = dict()
         self.user_dict = dict()
+
+
+    def get_role_resources(self, role):
+        # return a list of roles for user
+        # if user does not have roles, return empty list
+        return self.map_role_to_resources.get(role, [])
+
+
+    def get_user_roles(self, user_email):
+        # return a list of roles for user
+        # if user does not have roles, return empty list
+        return self.map_user_to_roles.get(user_email, [])
 
 
     def add_user(self, email, bank, passwd):
@@ -36,6 +48,34 @@ class Model:
     def del_user(self, email):
         self.user_dict.pop(email, None)
         return
+
+
+    def add_rsrc(self, rsrc, url):
+        if not rsrc in self.resources_dict:
+            self.resources_dict[rsrc] = url
+        else:
+            return False        
+        return
+
+
+    def del_rsrc(self, rsrc):
+        self.resources_dict.pop(rsrc, None)
+        return
+
+
+    def add_role(self, role, role_description):
+        if not role in self.roles_dict:
+            self.roles_dict[role] = role_description
+        else:
+            return False        
+        return
+
+
+    def del_role(self, role):
+        self.roles_dict.pop(role, None)
+        return
+
+
 
 
     def save(self):

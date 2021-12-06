@@ -1,8 +1,11 @@
+import re
 import inquirer
 import c2_mdl
 from pprint import pprint
 
 model = c2_mdl.Model()
+
+MAX_FIELD_CHAR_SIZE = 64
 
 def do_action_list():
     print("List")
@@ -38,6 +41,7 @@ def do_action_exit():
     exit(0)
 
 
+
 def passwd_check(answers, passwd):
 
     has_digit = False
@@ -66,20 +70,20 @@ def passwd_check(answers, passwd):
 
 
 def email_check(answers, email):
-    print("""
-        Missing validation:
-        1. Is a well formatted email
-        2. Email already existent.
-    """)
-    return True
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    if(re.fullmatch(regex, email)):
+        return True
+    return False
+
+
 
 
 def do_action_register_users():
 
     questions = [
         inquirer.Text('email',      message="Email ?", validate=email_check,),
-        inquirer.Text('bank',       message="Bank account ?"),
-        inquirer.Text('password',   message="Password ?", validate=passwd_check,)
+        inquirer.Text('bank',       message="Bank account ?", validate=email_check,),
+        inquirer.Password('password',   message="Password ?", validate=passwd_check,)
     ]    
 
     print("\n\n")
@@ -88,12 +92,6 @@ def do_action_register_users():
 
     model.add_user(answers['email'], answers['bank'], answers['password'])
 
-    return
-
-
-
-def do_action_save():
-    model.save()
     return
 
 
@@ -132,25 +130,136 @@ def do_action_register_rsrc():
 
 
 def do_action_delete_rsrc():
-    print("do_action_delete_rsrc - Not implemented yet!")
+
+    questions = [
+        inquirer.List(
+            'action', 
+            message="Select resource to delete: ?", 
+            choices=model.resource_dict.keys(), 
+        ),
+    ]
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    action = answers['action']
+    model.del_rsrc(action)
+
     return
 
 
 def do_action_register_role():
-    print("do_action_register_role - Not implemented yet!")
+
+    questions = [
+        inquirer.Text('role',           message="Role name ?"),
+        inquirer.Text('description',    message="Role description ?"),
+    ]    
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    pprint(answers)
+
+    model.add_role(answers['role'], answers['description'])
+
     return
+
 
 
 def do_action_delete_role():
-    print("do_action_delete_role - Not implemented yet!")
+
+    questions = [
+        inquirer.List(
+            'action', 
+            message="Select role to delete: ?", 
+            choices=model.roles_dict.keys(), 
+        ),
+    ]
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    action = answers['action']
+    model.del_role(action)
+
     return
 
+
+def do_action_save():
+    model.save()
+    return
 
 
 def init():
     print("init")
     model.load_bootstrap()
     return
+
+
+def do_action_update_user_roles():
+    print("")
+
+    questions = [
+        inquirer.List(
+            'user_email', 
+            message="Select user email: ", 
+            choices=model.user_dict.keys(), 
+        ),
+    ]
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    user_selected = answers['user_email']
+
+    current_user_roles = model.get_user_roles(user_selected)
+    all_roles = model.roles_dict.keys();
+
+    questions_user_roles = [
+        inquirer.Checkbox(
+            user_selected,
+            message = "Roles: ",
+            choices = all_roles,
+            default = current_user_roles,
+        ),
+    ]
+
+    answers = inquirer.prompt(questions_user_roles)
+    #pprint(answers)
+    model.map_user_to_roles.update(answers)
+    return
+
+
+
+def do_action_update_roles_resources():
+
+    print("")
+
+    questions = [
+        inquirer.List(
+            'role', 
+            message="Select role: ", 
+            choices=model.roles_dict.keys(), 
+        ),
+    ]
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    role_selected = answers['role']
+
+    current_role_resources = model.get_role_resources(role_selected)
+    all_resources = model.roles_dict.keys();
+
+    questions_roles = [
+        inquirer.Checkbox(
+            role_selected,
+            message = "Roles: ",
+            choices = all_resources,
+            default = current_role_resources,
+        ),
+    ]
+
+    answers = inquirer.prompt(questions_roles)
+    #pprint(answers)
+    model.map_roles_to_rsrc.update(answers)
+    return
+
 
 
 def main():
@@ -164,14 +273,15 @@ def main():
             choices=[
                 'Save',
                 '0. List all',
-                '1. Register Users', 
-                '2. Delete Users', 
-                '3. Register Resources',
-                '4. Delete Resources',
-                '5. Register Roles',
-                '6. Delete Roles',
-                'XXX. Faltam as seguintes',
-                'YYY. Verificar a possiblidade de menus dentro de menus',
+                '1. Register User', 
+                '2. Delete User', 
+                '3. Register Resource',
+                '4. Delete Resource',
+                '5. Register Role',
+                '6. Delete Role',
+                '7. Associate roles to User',
+                '8. Add resources to roles',
+                '9. XXX Export emails/users about to expire ',
                 'Exit',
             ], 
         ),
@@ -200,6 +310,10 @@ def main():
             do_action_register_role()
         elif action.startswith('6'):
             do_action_delete_role()
+        elif action.startswith('7'):
+            do_action_update_user_roles()
+        elif action.startswith('8'):
+            do_action_update_roles_resources()
         else:
             print("Not implemented yet")
             exit(1)
