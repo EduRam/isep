@@ -261,6 +261,45 @@ def do_action_update_roles_resources():
     return
 
 
+def do_action_list_user_resources():
+
+    print("")
+
+    questions = [
+        inquirer.List(
+            'user_email', 
+            message="Select user email: ", 
+            choices=model.users_dict.keys(), 
+        ),
+    ]
+
+    print("\n\n")
+    answers = inquirer.prompt(questions)
+    user_selected = answers['user_email']
+
+    # we are going to search for all resources for a user
+    # resources names will be added to a set
+    # a set collection will filter for us, for duplicates.
+    # python sets are defined between "{" "}"
+    user_rsrcs_set = set()
+
+    user_roles = model.get_user_roles(user_selected)
+    for role in user_roles:
+        for resource in model.get_role_resources(role):
+            user_rsrcs_set.add(resource + " - " + model.resources_dict[resource])
+
+
+    is_empty = (len(user_rsrcs_set) == 0)
+    if is_empty:
+        print("\n" + "No resources found!")
+    else:
+        # this print construction
+        # will print each element on the set
+        # one element per line
+        print("\n".join(user_rsrcs_set))
+
+    return
+
 
 def main():
 
@@ -272,16 +311,17 @@ def main():
             message="Select an action: ?", 
             choices=[
                 'Save',
-                '0. List all',
-                '1. Register User', 
-                '2. Delete User', 
-                '3. Register Resource',
-                '4. Delete Resource',
-                '5. Register Role',
-                '6. Delete Role',
-                '7. Associate roles to User',
-                '8. Add resources to roles',
-                '9. XXX Export emails/users about to expire ',
+                '0.  List all',
+                '1.  Register User', 
+                '2.  Delete User', 
+                '3.  Register Resource',
+                '4.  Delete Resource',
+                '5.  Register Role',
+                '6.  Delete Role',
+                '7.  Associate roles to User',
+                '8.  Add resources to roles',
+                '9.  List user resources',
+                '10. XXXXXX Export emails/users about to expire',
                 'Exit',
             ], 
         ),
@@ -314,6 +354,8 @@ def main():
             do_action_update_user_roles()
         elif action.startswith('8'):
             do_action_update_roles_resources()
+        elif action.startswith('9'):
+            do_action_list_user_resources()
         else:
             print("Not implemented yet")
             exit(1)
