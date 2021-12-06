@@ -1,11 +1,19 @@
+import time
 import re
 import inquirer
 import c2_mdl
 from pprint import pprint
 
+# this is a class
+# but only one instance is necessary
+# singleton how to ?
 model = c2_mdl.Model()
 
+# some constants
 MAX_FIELD_CHAR_SIZE = 64
+SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60
+EXPIRATION_DAYS_IN_SECONDS = 30 * 24 * 60 * 60
+
 
 def do_action_list():
     print("List")
@@ -316,12 +324,48 @@ def do_action_list_user_resources():
 
 def do_action_list_export():
 
-    passwd_validity = 30
+    users_with_passwd_about_to_expire_list = list()
 
     for user in model.users_dict:
 
         user_params_list = model.users_dict[user]
-    
+
+        # 0 is banck account number (int)
+        # 1 is the passwd (anything)
+        # 2 is the last modified epoch date passwd has changed (int)
+        user_passwd_last_modified_time_sec = user_params_list[2]
+
+        # get epoch date that passwd will expire (in seconds)
+        #       last_modified_time_sec is epoch
+        #       EXPIRATION_DAYS_IN_SECONDS is relative
+        passwd_expiration_date_in_seconds = int(user_passwd_last_modified_time_sec) + int(EXPIRATION_DAYS_IN_SECONDS)
+        
+        # current epoch time in seconds
+        current_time_in_sec = int(time.time())
+
+        # epcoh date 7 days in the future
+        future_seven_day_time_in_sec = current_time_in_sec + SEVEN_DAYS_IN_SECONDS
+
+        # compare future date with passwd already expired
+        #if passwd_expiration_date_in_seconds < future_seven_day_time_in_sec:
+        if True:
+            users_with_passwd_about_to_expire_list.append(user)
+
+    # end for user in model.users_dict:
+
+    if len(users_with_passwd_about_to_expire_list) == 0:
+        print("No users have passwd about to expire in the next 7 days.")
+        return
+
+    # mode wt is:
+    # file to write
+    # in text mode (but already is the default)
+    # (CYBER): shows all parameters be explicit ?
+    with open('passwd_about_to_expire.txt', mode='wt', encoding='utf-8') as myfile:
+        myfile.write('\n'.join(users_with_passwd_about_to_expire_list))
+
+
+
     return
     
 
@@ -335,19 +379,19 @@ def main():
             'action', 
             message="Select an action: ?", 
             choices=[
-                ('Save',                    'save'),
-                ('List all',                'list'),
-                ('Register User',           'register_users'),
-                ('Delete User',             'delete_users'),
-                ('Register Resource',       'register_rsrc'),
-                ('Delete Resource',         'delete_rsrc'),
-                ('Register Role',           'register_role'),
-                ('Delete Role',             'delete_role'),
-                ('Associate roles to User', 'update_user_roles'),
-                ('Add resources to roles',  'update_roles_resources'),
-                ('List user resources',     'list_user_resources'),
-                ('XXX Export emails/users to expire',   'export'),
-                ('XXX Change passwd expiration',        'change_passwd'),                
+                ('Save',                            'save'),
+                ('List all',                        'list'),
+                ('Register User',                   'register_users'),
+                ('Delete User',                     'delete_users'),
+                ('Register Resource',               'register_rsrc'),
+                ('Delete Resource',                 'delete_rsrc'),
+                ('Register Role',                   'register_role'),
+                ('Delete Role',                     'delete_role'),
+                ('Associate roles to User',         'update_user_roles'),
+                ('Add resources to roles',          'update_roles_resources'),
+                ('List user resources',             'list_user_resources'),
+                ('Export emails/users to expire',   'export'),
+                ('XXX Change passwd expiration',    'change_passwd'),                
                 ('Exit', 'exit'),
             ], 
         ),
