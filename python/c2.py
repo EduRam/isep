@@ -15,7 +15,7 @@ def do_action_list():
             'action', 
             message="Select an action: ?", 
             choices=[
-                'Back',
+                ('Back','back'),
                 '1. List Users',
                 '2. List Resources',
                 '3. List Roles',
@@ -26,7 +26,7 @@ def do_action_list():
     while True:
         answers = inquirer.prompt(questions)
         action = answers['action']
-        if action == 'Back':
+        if action == 'back':
             break
         elif action.startswith('1'):
             print(model.users_dict)
@@ -69,7 +69,20 @@ def passwd_check(answers, passwd):
     return is_valid_passwd
 
 
+
+def user_input_check(anything):
+
+    if len(anything) > MAX_FIELD_CHAR_SIZE:
+        return False
+    return True
+
+
+
 def email_check(answers, email):
+
+    if len(email) == 0 or len(email) > MAX_FIELD_CHAR_SIZE:
+        return False
+
     regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     if(re.fullmatch(regex, email)):
         return True
@@ -77,13 +90,12 @@ def email_check(answers, email):
 
 
 
-
 def do_action_register_users():
 
     questions = [
-        inquirer.Text('email',      message="Email ?", validate=email_check,),
-        inquirer.Text('bank',       message="Bank account ?", validate=email_check,),
-        inquirer.Password('password',   message="Password ?", validate=passwd_check,)
+        inquirer.Text('email',          message="Email ?",          validate=email_check,),
+        inquirer.Text('bank',           message="Bank account ?",   validate=email_check,),
+        inquirer.Password('password',   message="Password ?",       validate=passwd_check,)
     ]    
 
     print("\n\n")
@@ -301,6 +313,19 @@ def do_action_list_user_resources():
     return
 
 
+
+def do_action_list_export():
+
+    passwd_validity = 30
+
+    for user in model.users_dict:
+
+        user_params_list = model.users_dict[user]
+    
+    return
+    
+
+
 def main():
 
     init()
@@ -310,19 +335,20 @@ def main():
             'action', 
             message="Select an action: ?", 
             choices=[
-                'Save',
-                '0.  List all',
-                '1.  Register User', 
-                '2.  Delete User', 
-                '3.  Register Resource',
-                '4.  Delete Resource',
-                '5.  Register Role',
-                '6.  Delete Role',
-                '7.  Associate roles to User',
-                '8.  Add resources to roles',
-                '9.  List user resources',
-                '10. XXXXXX Export emails/users about to expire',
-                'Exit',
+                ('Save',                    'save'),
+                ('List all',                'list'),
+                ('Register User',           'register_users'),
+                ('Delete User',             'delete_users'),
+                ('Register Resource',       'register_rsrc'),
+                ('Delete Resource',         'delete_rsrc'),
+                ('Register Role',           'register_role'),
+                ('Delete Role',             'delete_role'),
+                ('Associate roles to User', 'update_user_roles'),
+                ('Add resources to roles',  'update_roles_resources'),
+                ('List user resources',     'list_user_resources'),
+                ('XXX Export emails/users to expire',   'export'),
+                ('XXX Change passwd expiration',        'change_passwd'),                
+                ('Exit', 'exit'),
             ], 
         ),
     ]
@@ -332,30 +358,32 @@ def main():
         print("\n\n")
         answers = inquirer.prompt(questions)
         action = answers['action']
-        if action == 'Exit':
+        if action == 'exit':
             do_action_exit()
-        if action == 'Save':
+        if action == 'save':
             do_action_save()
-        elif action.startswith('0'):
+        elif action.startswith('list'):
             do_action_list()
-        elif action.startswith('1'):
+        elif action.startswith('register_users'):
             do_action_register_users()
-        elif action.startswith('2'):
+        elif action.startswith('delete_users'):
             do_action_delete_users()
-        elif action.startswith('3'):
+        elif action.startswith('register_rsrc'):
             do_action_register_rsrc()
-        elif action.startswith('4'):
+        elif action.startswith('delete_rsrc'):
             do_action_delete_rsrc()
-        elif action.startswith('5'):
+        elif action.startswith('register_role'):
             do_action_register_role()
-        elif action.startswith('6'):
+        elif action.startswith('delete_role'):
             do_action_delete_role()
-        elif action.startswith('7'):
+        elif action.startswith('update_user_roles'):
             do_action_update_user_roles()
-        elif action.startswith('8'):
+        elif action.startswith('update_roles_resources'):
             do_action_update_roles_resources()
-        elif action.startswith('9'):
+        elif action.startswith('list_user_resources'):
             do_action_list_user_resources()
+        elif action.startswith('export'):
+            do_action_list_export()
         else:
             print("Not implemented yet")
             exit(1)
