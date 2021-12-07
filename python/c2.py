@@ -1,6 +1,8 @@
+import argparse
 import time
 import re
 import inquirer
+from inquirer.questions import Password
 import c2_mdl
 from pprint import pprint
 
@@ -9,10 +11,18 @@ from pprint import pprint
 # singleton how to ?
 model = c2_mdl.Model()
 
-# some constants
+# some global constants
 MAX_FIELD_CHAR_SIZE = 64
-SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60
-EXPIRATION_DAYS_IN_SECONDS = 30 * 24 * 60 * 60
+DAY_IN_SECONDS = 24 * 60 * 60
+SEVEN_DAYS_IN_SECONDS = 7 * DAY_IN_SECONDS
+
+# carefull ... we must use global keyword inside functions, 
+# if we need to change this variable.
+expiration_days = 30 
+
+# salt
+salt = ""
+
 
 
 def do_action_list():
@@ -78,7 +88,7 @@ def passwd_check(answers, passwd):
 
 
 
-def user_input_check(anything):
+def user_input_check(answers, anything):
 
     if len(anything) > MAX_FIELD_CHAR_SIZE:
         return False
@@ -102,7 +112,7 @@ def do_action_register_users():
 
     questions = [
         inquirer.Text('email',          message="Email ?",          validate=email_check,),
-        inquirer.Text('bank',           message="Bank account ?",   validate=email_check,),
+        inquirer.Text('bank',           message="Bank account ?",   validate=user_input_check,),
         inquirer.Password('password',   message="Password ?",       validate=passwd_check,)
     ]    
 
@@ -207,9 +217,20 @@ def do_action_save():
     return
 
 
-def init():
+def init(args):
     print("init")
-    model.load_bootstrap()
+
+    if args.passwd:
+        salt = args.passwd
+        model.set_salt(salt)
+
+    if args.demo:
+        model.load_bootstrap()
+    else:
+        model.load()
+
+    expiration_days = 30
+
     return
 
 
@@ -229,7 +250,7 @@ def do_action_update_user_roles():
     user_selected = answers['user_email']
 
     current_user_roles = model.get_user_roles(user_selected)
-    all_roles = model.roles_dict.keys();
+    all_roles = model.roles_dict.keys()
 
     questions_user_roles = [
         inquirer.Checkbox(
@@ -264,7 +285,7 @@ def do_action_update_roles_resources():
     role_selected = answers['role']
 
     current_role_resources = model.get_role_resources(role_selected)
-    all_resources = model.resources_dict.keys();
+    all_resources = model.resources_dict.keys()
 
     questions_roles = [
         inquirer.Checkbox(
@@ -338,7 +359,7 @@ def do_action_list_export():
         # get epoch date that passwd will expire (in seconds)
         #       last_modified_time_sec is epoch
         #       EXPIRATION_DAYS_IN_SECONDS is relative
-        passwd_expiration_date_in_seconds = int(user_passwd_last_modified_time_sec) + int(EXPIRATION_DAYS_IN_SECONDS)
+        passwd_expiration_date_in_seconds = int(user_passwd_last_modified_time_sec) + int(expiration_days * DAY_IN_SECONDS)
         
         # current epoch time in seconds
         current_time_in_sec = int(time.time())
@@ -364,15 +385,40 @@ def do_action_list_export():
     with open('passwd_about_to_expire.txt', mode='wt', encoding='utf-8') as myfile:
         myfile.write('\n'.join(users_with_passwd_about_to_expire_list))
 
-
-
     return
     
 
+# experiration day must be
+# a number
+# and between 1 and 120 
+def validate_expiration_days(answers, current):
 
-def main():
+    if not current.isnumeric() or int(current) <= 0 or int(current) > 120:
+        raise errors.ValidationError('', reason='Invalid day! Must be between 1 and 120.')
 
-    init()
+    return True
+
+
+def do_action_change_expiration():
+    global expiration_days
+    print("Current number of days to expire: {}".format(expiration_days))
+
+    questions = [
+        inquirer.Text('expiration_days', 
+            message="New passwd expiration days: ",
+            validate=validate_expiration_days),
+    ]
+    answers = inquirer.prompt(questions)
+    pprint(answers)
+    expiration_days = answers['expiration_days']
+
+    return
+
+
+
+def main(args):
+
+    init(args)
 
     questions = [
         inquirer.List(
@@ -391,7 +437,7 @@ def main():
                 ('Add resources to roles',          'update_roles_resources'),
                 ('List user resources',             'list_user_resources'),
                 ('Export emails/users to expire',   'export'),
-                ('XXX Change passwd expiration',    'change_passwd'),                
+                ('Change passwd expiration',        'change_expiration'),                
                 ('Exit', 'exit'),
             ], 
         ),
@@ -428,14 +474,19 @@ def main():
             do_action_list_user_resources()
         elif action.startswith('export'):
             do_action_list_export()
+        elif action.startswith('change_expiration'):
+            do_action_change_expiration()
         else:
             print("Not implemented yet")
             exit(1)
 
 
-# classic main entry point
+# idiomatic main entry point
 if __name__ == '__main__':
-    main()
 
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--passwd", help = "Password")
+    parser.add_argument("demo", nargs='?')
+    args = parser.parse_args()
+    main(args)
 
