@@ -126,10 +126,10 @@ class Model:
                 sha256_hash.update(byte_block)        
 
         # add version as salt
-        sha256_hash.update(b(version))        
+        sha256_hash.update(str(version).encode('utf-8'))        
 
         # add secret key as salt
-        sha256_hash.update(b(self.salt))        
+        sha256_hash.update(str(self.salt).encode('utf-8'))        
 
         # hexdigest represents values in a print friendly way
         return sha256_hash.hexdigest()
@@ -220,15 +220,16 @@ class Model:
 
         # find file with checksum
         # no checksum, no party!
-        file_list = glob.glob('**/*.checksum', recursive = False)
+        file_list = glob.glob('*.checksum', recursive = False)
 
         if not file_list:
             print("Missing checksum file. Do not trust database. Exit immediately!")
             exit(1)
 
         # i am only expecting only one checksum file
-        # but if there are more, then use only the last(more recent) one
-        checksum_filename = file_list.sorted[0]
+        # but if there are more, then use only the last(more recent).
+        # this could happen if something went wrong while removing previous database version
+        checksum_filename = sorted(file_list)[0] 
         
         # get version from checksum_filename
         # by spliting filename in two parts.
@@ -239,12 +240,12 @@ class Model:
             print("Wrong checksum filename. Exit immediately!")
             exit(1)
 
-        version = version_list[0]
+        version = int(version_list[0])
 
         # (cyber) version is a date
         # verify if local computer date did not go back in time
         # (or the database version date is not from the future)
-        current_time = int(time.time)
+        current_time = int(time.time())
 
         if current_time <= version:
             print("Wrong database version/time reference. It cannot be on the future. Exit immediately!")
@@ -254,7 +255,7 @@ class Model:
         # read checksum from checksum file
         expected_checksum = ''
         with open(checksum_filename, 'r') as checksum_file:
-            expected_checksum = checksum_file.readlines()
+            expected_checksum = str(checksum_file.readlines()[0])
 
         if not expected_checksum:
             print("Empty checksum. Do not trust database. Exit immediately!")
@@ -265,22 +266,39 @@ class Model:
 
         # (CYBER) 
         # If checksum does not match, do not trust.
+
         if current_checksum != expected_checksum:
             print("Checksum does not match. Do not trust database. Exit immediately!")
+            print('current_checksum:  ' + current_checksum)
+            print('expected_checksum: ' + expected_checksum)
+
             exit(1)
 
 
+        self.version = int(version)
 
-        with open(self.user_filename) as json_file:
+        version_user_filename   = str(self.version) + self.user_filename
+        version_rsrc_filename   = str(self.version) + self.rsrc_filename
+        version_roles_filename  = str(self.version) + self.roles_filename
+        version_map_user_to_roles_filename      = str(self.version) + self.map_user_to_roles_filename
+        version_map_role_to_resources_filename  = str(self.version) + self.map_role_to_resources_filename
+
+        with open(version_user_filename) as json_file:
             self.users_dict = json.load(json_file)
         
-        with open(self.rsrc_filename) as json_file:
+        with open(version_rsrc_filename) as json_file:
             self.resources_dict = json.load(json_file)
 
-        with open(self.roles_filename) as json_file:
+        with open(version_roles_filename) as json_file:
             self.roles_dict = json.load(json_file)
 
-        print("End bootstrap")
+        with open(version_map_user_to_roles_filename) as json_file:
+            self.map_user_to_roles = json.load(json_file)
+
+        with open(version_map_role_to_resources_filename) as json_file:
+            self.map_role_to_resource = json.load(json_file)
+
+        print("End load")
 
 
     def set_salt(self, salt):
