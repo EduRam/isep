@@ -5,6 +5,7 @@ import inquirer
 from inquirer.questions import Password
 import c2_mdl
 from pprint import pprint
+import os
 
 # this is a class
 # but only one instance is necessary
@@ -91,6 +92,8 @@ def passwd_check(answers, passwd):
 def user_input_check(answers, anything):
 
     if len(anything) > MAX_FIELD_CHAR_SIZE:
+        return False
+    if not anything.isnumeric():
         return False
     return True
 
@@ -250,6 +253,15 @@ def init(args):
     #    salt = args.passwd
 
     model.set_salt(salt)
+
+
+    # (cyber) should ignore to continue if more than 100000 files present
+    # on current directory ?
+    all_files = os.listdir()
+    if len(all_files) > int(1000):
+        print("Too many files found on current directory. Exit immediately!")
+        exit(1)
+
 
     if args.demo:
         model.load_bootstrap()

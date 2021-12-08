@@ -2,7 +2,7 @@ import json
 import time
 import hashlib
 import glob
-
+import os
 
 class Model:
 
@@ -214,9 +214,6 @@ class Model:
 
         print("Load")
 
-
-        # (cyber) should ignore to continue if more than 100000 files present
-        # on current directory ?
 
         # find file with checksum
         # no checksum, no party!
