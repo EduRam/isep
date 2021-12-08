@@ -1,0 +1,13 @@
+{
+    "edu@edu.pt": [
+        "admin"
+    ],
+    "luis@luis.pt": [
+        "admin",
+        "IT"
+    ],
+    "sandro@sandro.pt": [
+        "admin",
+        "management"
+    ]
+}

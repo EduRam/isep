@@ -1,0 +1,25 @@
+{
+    "IT": [
+        "backups",
+        "telecom",
+        "bd",
+        "intranet"
+    ],
+    "admin": [
+        "banco",
+        "fin",
+        "pessoas",
+        "compras",
+        "backups",
+        "telecom",
+        "bd",
+        "intranet"
+    ],
+    "management": [
+        "banco",
+        "fin",
+        "pessoas",
+        "compras",
+        "intranet"
+    ]
+}

@@ -1,5 +1,5 @@
 {
-    "role1": "human resources",
-    "role2": "finance team",
-    "role3": "management"
+    "IT": "mngmnt IT",
+    "admin": "full access",
+    "management": "money and people"
 }

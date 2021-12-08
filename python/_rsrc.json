@@ -1,6 +1,10 @@
 {
-    "rsrc1": "/files",
-    "rsrc2": "/emplyees",
-    "rsrc3": "/bank",
-    "rsrc4": "/marketing"
+    "backups": "/bkp",
+    "banco": "/banco",
+    "bd": "/database",
+    "compras": "/compras",
+    "fin": "/financas",
+    "intranet": "/intra",
+    "pessoas": "/pessoas",
+    "telecom": "/telecom"
 }

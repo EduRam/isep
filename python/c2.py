@@ -127,18 +127,25 @@ def do_action_register_users():
 
 def do_action_delete_users():
 
+    choices_list = list(model.users_dict.keys())
+    choices_list.append('< Back')
+
     questions = [
         inquirer.List(
             'action', 
             message="Select user to delete: ?", 
-            choices=model.users_dict.keys(), 
+            choices=choices_list, 
         ),
     ]
 
     print("\n\n")
     answers = inquirer.prompt(questions)
     action = answers['action']
-    model.del_user(action)
+
+    if action == '< Back':
+        return   
+    else:
+        model.del_user(action)
 
     return
 
@@ -160,19 +167,26 @@ def do_action_register_rsrc():
 
 
 def do_action_delete_rsrc():
+    
+    choices_list = list(model.resources_dict.keys())
+    choices_list.append('< Back')
 
     questions = [
         inquirer.List(
             'action', 
             message="Select resource to delete: ?", 
-            choices=model.resource_dict.keys(), 
+            choices=choices_list, 
         ),
     ]
 
     print("\n\n")
     answers = inquirer.prompt(questions)
     action = answers['action']
-    model.del_rsrc(action)
+
+    if action == '< Back':
+        return   
+    else:
+        model.del_rsrc(action)
 
     return
 
@@ -196,18 +210,25 @@ def do_action_register_role():
 
 def do_action_delete_role():
 
+    choices_list = list(model.roles_dict.keys())
+    choices_list.append('< Back')
+
     questions = [
         inquirer.List(
             'action', 
             message="Select role to delete: ?", 
-            choices=model.roles_dict.keys(), 
+            choices=choices_list, 
         ),
     ]
 
     print("\n\n")
     answers = inquirer.prompt(questions)
     action = answers['action']
-    model.del_role(action)
+
+    if action == '< Back':
+        return   
+    else:
+        model.del_role(action)
 
     return
 
@@ -220,9 +241,15 @@ def do_action_save():
 def init(args):
     print("init")
 
-    if args.passwd:
-        salt = args.passwd
-        model.set_salt(salt)
+    while True:
+        salt = str(inquirer.password(message='Please enter secret word (1 to 8 characters)')),
+        if len(salt) > 0 or len(salt) < 8:
+            break
+
+    #if args.passwd:
+    #    salt = args.passwd
+
+    model.set_salt(salt)
 
     if args.demo:
         model.load_bootstrap()
@@ -319,8 +346,8 @@ def do_action_list_user_resources():
     user_selected = answers['user_email']
 
     # we are going to search for all resources for a user
-    # resources names will be added to a set
-    # a set collection will filter for us, for duplicates.
+    # resources names will be added to a collection of type "set".
+    # A "set" collection will filter for us, for duplicates.
     # python sets are defined between "{" "}"
     user_rsrcs_set = set()
 
@@ -359,7 +386,7 @@ def do_action_list_export():
         # get epoch date that passwd will expire (in seconds)
         #       last_modified_time_sec is epoch
         #       EXPIRATION_DAYS_IN_SECONDS is relative
-        passwd_expiration_date_in_seconds = int(user_passwd_last_modified_time_sec) + int(expiration_days * DAY_IN_SECONDS)
+        passwd_expiration_date_in_seconds = int(user_passwd_last_modified_time_sec) + (int(expiration_days) * DAY_IN_SECONDS)
         
         # current epoch time in seconds
         current_time_in_sec = int(time.time())
@@ -368,8 +395,8 @@ def do_action_list_export():
         future_seven_day_time_in_sec = current_time_in_sec + SEVEN_DAYS_IN_SECONDS
 
         # compare future date with passwd already expired
-        #if passwd_expiration_date_in_seconds < future_seven_day_time_in_sec:
-        if True:
+        #if True:
+        if passwd_expiration_date_in_seconds < future_seven_day_time_in_sec:
             users_with_passwd_about_to_expire_list.append(user)
 
     # end for user in model.users_dict:
@@ -378,9 +405,9 @@ def do_action_list_export():
         print("No users have passwd about to expire in the next 7 days.")
         return
 
-    # mode wt is:
-    # file to write
-    # in text mode (but already is the default)
+    # mode "wt" is:
+    # w - file to write
+    # t - in text mode (but already is the default)
     # (CYBER): shows all parameters be explicit ?
     with open('passwd_about_to_expire.txt', mode='wt', encoding='utf-8') as myfile:
         myfile.write('\n'.join(users_with_passwd_about_to_expire_list))
@@ -426,7 +453,7 @@ def main(args):
             message="Select an action: ?", 
             choices=[
                 ('Save',                            'save'),
-                ('List all',                        'list'),
+                ('List all',                        'list_all'),
                 ('Register User',                   'register_users'),
                 ('Delete User',                     'delete_users'),
                 ('Register Resource',               'register_rsrc'),
@@ -452,7 +479,7 @@ def main(args):
             do_action_exit()
         if action == 'save':
             do_action_save()
-        elif action.startswith('list'):
+        elif action.startswith('list_all'):
             do_action_list()
         elif action.startswith('register_users'):
             do_action_register_users()

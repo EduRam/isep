@@ -43,7 +43,7 @@ class Model:
         # A good password hashing function must be tunable, slow, and include a salt.        
         # Source: https://docs.python.org/3/library/hashlib.html
 
-        passwd_hash_bytes = hashlib.pbkdf2_hmac('sha256', passwd.encode('utf-8'), self.salt.encode('utf-8'), 100000)
+        passwd_hash_bytes = hashlib.pbkdf2_hmac('sha256', passwd.encode('utf-8'), str(self.salt).encode('utf-8'), 100000)
 
         # convert to hex, so it is only represented with letters and numbers 
         # (not special characters)
@@ -177,7 +177,7 @@ class Model:
             print(checksum)
 
             checksum_filename = str(self.version) + ".checksum"
-            with open (checksum_filename, 'a') as f: f.write (checksum)
+            with open (checksum_filename, 'w') as f: f.write (checksum)
 
             # remove older files
             self.remove_previous_version(self.version)
@@ -296,10 +296,10 @@ class Model:
             self.map_user_to_roles = json.load(json_file)
 
         with open(version_map_role_to_resources_filename) as json_file:
-            self.map_role_to_resource = json.load(json_file)
+            self.map_role_to_resources = json.load(json_file)
 
         print("End load")
 
 
     def set_salt(self, salt):
-        self.salt = salt
+        self.salt = str(salt)
