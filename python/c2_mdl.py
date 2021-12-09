@@ -75,6 +75,14 @@ class Model:
 
 
     def del_rsrc(self, rsrc):
+
+        for role in self.map_role_to_resources:
+            for resource in self.get_role_resources(role):
+                if rsrc == resource:
+                    print("Could not remove resource: {} because it is associated with role: {}".format(rsrc, role))
+                    return
+
+
         self.resources_dict.pop(rsrc, None)
         return
 
@@ -88,6 +96,13 @@ class Model:
 
 
     def del_role(self, role):
+
+        for user in self.map_user_to_roles:
+            for test_role in self.get_user_roles(user):
+                if test_role == role:
+                    print("Could not remove role: {} because it is associated with user: {}".format(role, user))
+                    return
+
         self.roles_dict.pop(role, None)
         return
 

@@ -6,6 +6,7 @@ from inquirer.questions import Password
 import c2_mdl
 from pprint import pprint
 import os
+import json
 
 # this is a class
 # but only one instance is necessary
@@ -48,11 +49,11 @@ def do_action_list():
         if action == 'back':
             break
         elif action.startswith('1'):
-            print(model.users_dict)
+            pprint(model.users_dict)
         elif action.startswith('2'):
-            print(model.resources_dict)
+            pprint(model.resources_dict)
         elif action.startswith('3'):
-            print(model.roles_dict)
+            pprint(model.roles_dict)
 
 
 def do_action_exit():
