@@ -141,13 +141,42 @@ class Model:
     # all files, including checksum.
     def remove_previous_version(self, version):
 
+        files_to_delete = list()
+
+        version_user_filename   = str(version) + self.user_filename
+        files_to_delete.append(version_user_filename)
+
+        version_rsrc_filename   = str(version) + self.rsrc_filename
+        files_to_delete.append(version_rsrc_filename)
+
+        version_roles_filename  = str(version) + self.roles_filename
+        files_to_delete.append(version_roles_filename)
+
+        version_map_user_to_roles_filename      = str(version) + self.map_user_to_roles_filename
+        files_to_delete.append(version_map_user_to_roles_filename)
+
+        version_map_role_to_resources_filename  = str(version) + self.map_role_to_resources_filename
+        files_to_delete.append(version_map_role_to_resources_filename)
+
+        version_checksum  = str(version) + ".checksum"
+        files_to_delete.append(version_checksum)
+
+        try:
+            for file in files_to_delete:
+                os.remove(file)
+        except OSError:
+            print('Failed removing older db version files. ')
+        else:
+            print('Previous db version removed.')
+
         return
 
 
     def save(self):
 
-        #self.version = int(time.time)
-        self.version = 0
+        current_version = self.version
+        self.version = int(time.time())
+        #self.version = 0
 
         version_user_filename   = str(self.version) + self.user_filename
         version_rsrc_filename   = str(self.version) + self.rsrc_filename
@@ -180,7 +209,7 @@ class Model:
             with open (checksum_filename, 'w') as f: f.write (checksum)
 
             # remove older files
-            self.remove_previous_version(self.version)
+            self.remove_previous_version(current_version)
 
         except OSError:
             print('Failed creating the files ')
