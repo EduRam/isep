@@ -249,6 +249,13 @@ class Model:
         with open(self.roles_filename) as json_file:
             self.roles_dict = json.load(json_file)
 
+        with open(self.map_user_to_roles_filename) as json_file:
+            self.map_user_to_roles = json.load(json_file)
+
+        with open(self.map_role_to_resources_filename) as json_file:
+            self.map_role_to_resources = json.load(json_file)
+
+
         print("End bootstrap")
 
 

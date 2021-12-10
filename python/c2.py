@@ -6,7 +6,7 @@ from inquirer.questions import Password
 import c2_mdl
 from pprint import pprint
 import os
-import json
+import logging
 
 # this is a class
 # but only one instance is necessary
@@ -59,6 +59,7 @@ def do_action_list():
 
 def do_action_exit():
     print("Exit!")
+    logging.info('Exit')    
     exit(0)
 
 
@@ -127,6 +128,7 @@ def do_action_register_users():
     pprint(answers)
 
     model.add_user(answers['email'], answers['bank'], answers['password'])
+    logging.info('Add user: ' + str(answers['email']))
 
     return
 
@@ -152,6 +154,7 @@ def do_action_delete_users():
         return   
     else:
         model.del_user(action)
+        logging.info('Delete user: ' + str(action))
 
     return
 
@@ -165,9 +168,10 @@ def do_action_register_rsrc():
 
     print("\n\n")
     answers = inquirer.prompt(questions)
-    pprint(answers)
+    #pprint(answers)
 
     model.add_rsrc(answers['rsrc'], answers['url'])
+    logging.info('Register resource: ' + str(answers['rsrc']))
 
     return
 
@@ -193,6 +197,8 @@ def do_action_delete_rsrc():
         return   
     else:
         model.del_rsrc(action)
+        logging.info('Delete resource: ' + str(action))
+
 
     return
 
@@ -209,6 +215,7 @@ def do_action_register_role():
     pprint(answers)
 
     model.add_role(answers['role'], answers['description'])
+    logging.info('Add role: ' + str(answers['role']))
 
     return
 
@@ -235,17 +242,24 @@ def do_action_delete_role():
         return   
     else:
         model.del_role(action)
+        logging.info('Delete role: ' + str(action))
+
 
     return
 
 
 def do_action_save():
     model.save()
+
+    logging.info('Save model ' + str(model.version))
+
     return
 
 
 def init(args):
-    print("init")
+    
+    logging.basicConfig(filename='trace.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.info('Started')
 
     while True:
         salt = str(inquirer.password(message='Please enter secret word (1 to 8 characters)')),
@@ -255,6 +269,8 @@ def init(args):
     #if args.passwd:
     #    salt = args.passwd
 
+    logging.info('Set salt: xxxxx')
+
     model.set_salt(salt)
 
 
@@ -263,6 +279,7 @@ def init(args):
     all_files = os.listdir()
     if len(all_files) > int(1000):
         print("Too many files found on current directory. Exit immediately!")
+        logging.info("Too many files found on current directory. Exit immediately!")
         exit(1)
 
 
@@ -309,6 +326,9 @@ def do_action_update_user_roles():
     answers = inquirer.prompt(questions_user_roles)
     #pprint(answers)
     model.map_user_to_roles.update(answers)
+
+    logging.info("Update user roles: !" + user_selected)
+
     return
 
 
@@ -344,6 +364,9 @@ def do_action_update_roles_resources():
     answers = inquirer.prompt(questions_roles)
     #pprint(answers)
     model.map_role_to_resources.update(answers)
+
+    logging.info("Update roles resources " + role_selected)
+
     return
 
 
@@ -383,6 +406,8 @@ def do_action_list_user_resources():
         # will print each element on the set
         # one element per line
         print("\n".join(user_rsrcs_set))
+
+    logging.info("List user resources " + user_selected)
 
     return
 
@@ -430,6 +455,8 @@ def do_action_list_export():
     with open('passwd_about_to_expire.txt', mode='wt', encoding='utf-8') as myfile:
         myfile.write('\n'.join(users_with_passwd_about_to_expire_list))
 
+    logging.info("Export users to file passwd_about_to_expire.txt")
+
     return
     
 
@@ -456,6 +483,8 @@ def do_action_change_expiration():
     answers = inquirer.prompt(questions)
     pprint(answers)
     expiration_days = answers['expiration_days']
+
+    logging.info("Change expiration to " + str(expiration_days))
 
     return
 
@@ -493,6 +522,9 @@ def main(args):
         print("\n\n")
         answers = inquirer.prompt(questions)
         action = answers['action']
+
+        logging.info("Selected action " + str(action))
+
         if action == 'exit':
             do_action_exit()
         if action == 'save':
