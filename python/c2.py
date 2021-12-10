@@ -102,6 +102,13 @@ def nib_check(answers, anything):
     return True
 
 
+def max_length(answers, anything):
+
+    if len(anything) == 0 or len(anything) > 16:
+        return False
+
+    return True
+
 
 def email_check(answers, email):
 
@@ -162,8 +169,8 @@ def do_action_delete_users():
 def do_action_register_rsrc():
 
     questions = [
-        inquirer.Text('rsrc',       message="Resource name ?"),
-        inquirer.Text('url',        message="URL ?"),
+        inquirer.Text('rsrc',       message="Resource name ?",  validate=max_length,),
+        inquirer.Text('url',        message="URL ?",  validate=max_length,),
     ]    
 
     print("\n\n")
@@ -206,8 +213,8 @@ def do_action_delete_rsrc():
 def do_action_register_role():
 
     questions = [
-        inquirer.Text('role',           message="Role name ?"),
-        inquirer.Text('description',    message="Role description ?"),
+        inquirer.Text('role',           message="Role name ?",  validate=max_length,),
+        inquirer.Text('description',    message="Role description ?",  validate=max_length,),
     ]    
 
     print("\n\n")
