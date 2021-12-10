@@ -2,7 +2,7 @@ import argparse
 import time
 import re
 import inquirer
-from inquirer.questions import Password
+#from inquirer.questions import Password
 import c2_mdl
 from pprint import pprint
 import os
@@ -132,9 +132,11 @@ def do_action_register_users():
 
     print("\n\n")
     answers = inquirer.prompt(questions)
-    pprint(answers)
 
     model.add_user(answers['email'], answers['bank'], answers['password'])
+
+    print('Add user: ' + str(answers['email']))
+
     logging.info('Add user: ' + str(answers['email']))
 
     return

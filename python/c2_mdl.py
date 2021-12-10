@@ -37,6 +37,11 @@ class Model:
 
     def add_user(self, email, bank, passwd):
 
+        if email in self.users_dict:
+            print("User already exists. You may try to delete it and try again.")
+            return
+
+
         # (cyber) do not store plain passwords
         # Key derivation and key stretching algorithms are designed for secure password hashing. 
         # Naive algorithms such as sha1(password) are not resistant against brute-force attacks. 
