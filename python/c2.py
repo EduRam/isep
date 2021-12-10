@@ -14,6 +14,7 @@ import json
 model = c2_mdl.Model()
 
 # some global constants
+IBAN_SIZE = 21
 MAX_FIELD_CHAR_SIZE = 64
 DAY_IN_SECONDS = 24 * 60 * 60
 SEVEN_DAYS_IN_SECONDS = 7 * DAY_IN_SECONDS
@@ -90,12 +91,13 @@ def passwd_check(answers, passwd):
 
 
 
-def user_input_check(answers, anything):
+def nib_check(answers, anything):
 
-    if len(anything) > MAX_FIELD_CHAR_SIZE:
+    if len(anything) != IBAN_SIZE:
         return False
     if not anything.isnumeric():
         return False
+
     return True
 
 
@@ -116,7 +118,7 @@ def do_action_register_users():
 
     questions = [
         inquirer.Text('email',          message="Email ?",          validate=email_check,),
-        inquirer.Text('bank',           message="Bank account ?",   validate=user_input_check,),
+        inquirer.Text('bank',           message="Bank account NIB (21 digits) ?",   validate=nib_check,),
         inquirer.Password('password',   message="Password ?",       validate=passwd_check,)
     ]    
 
