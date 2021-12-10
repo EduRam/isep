@@ -264,8 +264,9 @@ class Model:
         file_list = glob.glob('*.checksum', recursive = False)
 
         if not file_list:
-            print("Missing checksum file. Do not trust database. Exit immediately!")
-            exit(1)
+            print("Missing checksum file. Load bootstraped data!")
+            self.load_bootstrap()
+            return
 
         # i am only expecting only one checksum file
         # but if there are more, then use only the last(more recent).

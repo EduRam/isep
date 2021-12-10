@@ -266,10 +266,13 @@ def init(args):
         exit(1)
 
 
-    if args.demo:
-        model.load_bootstrap()
-    else:
-        model.load()
+
+    #if args.demo:
+    #    model.load_bootstrap()
+    #else:
+    #    model.load()
+
+    model.load()
 
     expiration_days = 30
 
