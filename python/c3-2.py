@@ -118,9 +118,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--key", required = True, help="specify key. must be only letters")
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("--encode", dest='encode')
-    group.add_argument("--decode", dest='decode')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--encode", help="specify text to encode. must be only letters")
+    group.add_argument("--decode", help="specify text to decode. must be only letters")
 
     args = parser.parse_args()
     pp.pprint(args)
