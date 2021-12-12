@@ -2,6 +2,14 @@
 # initialize matrix 26x26, with zero
 matrix = [[0 for x in range(26)] for y in range(26)] 
 
+# A have value 65 on ascii table (65 + 0)
+# B value is 65 + 1 = 66
+# ...
+# Z is 65 + 25 = 90
+# decimal_value_of_A = 65
+decimal_value_of_A = ord('A')
+
+
 # This function generates the
 def generateKey(string, key):
 
@@ -23,41 +31,90 @@ def generateKey(string, key):
     return(key_with_padding.upper())
 
 
-def encodeText(string, key):
-    cipher_text = []
-    return
+def encodeText(original_text, key):
+
+    encoded_text_list = list()
+
+    # 1. get first letter of the key (first_letter_key)
+    # 2. get (row) for that letter (the alphabet)
+    # 3. get first letter from original_text (first_letter_text)
+    # 4. for the previous row, get column for that letter (j)
+    # 5. the encoded letter will be [i][j]
+    # 6. repeat for remaining letters (original_text)
+
+    #1
+    len_key = len(key)
+    for c in range(len_key):
+        first_letter_key = key[c]
+
+        decimal_first_letter_key = ord(first_letter_key)
+        row = decimal_first_letter_key - decimal_value_of_A
+
+        first_letter_text = original_text[c]
+        decimal_first_letter_text = ord(first_letter_text)
+
+        column = decimal_first_letter_text - decimal_value_of_A
+
+        encoded_letter = matrix[row][column]
+        encoded_text_list.append(encoded_letter)
+
+    return ''.join(encoded_text_list)
+
+
+
+def decodeText(encoded_text, key):
+
+    decoded_text_list = list()
+
+    len_key = len(key)
+    for c in range(len_key):
+        first_letter_key = key[c]
+
+        decimal_first_letter_key = ord(first_letter_key)
+        row = decimal_first_letter_key - decimal_value_of_A
+
+        first_letter_text = encoded_text[c]
+        decimal_first_letter_text = ord(first_letter_text)
+
+        first_letter_text_index = decimal_first_letter_text - decimal_value_of_A - row
+ 
+        if first_letter_text_index < 0:
+            first_letter_text_index = first_letter_text_index + 26
+
+        decoded_letter_value = first_letter_text_index + decimal_value_of_A
+        decoded_letter = chr(decoded_letter_value)
+        decoded_text_list.append(decoded_letter)
+
+    return ''.join(decoded_text_list)
+
 
 
 def main():
 
-    # A have value 65 on ascii table (65 + 0)
-    # B value is 65 + 1 = 66
-    # ...
-    # Z is 65 + 25 = 90
-    decimal_value_of_A = ord('A')
-
     # the alphabet have 26 letters
     # a...wxyz
-
+    # build the matrix, used to encode
     for i in range(26):
         for j in range(26):
 
-            next_index_from_A = (i + j) % 26
-            letter_value = decimal_value_of_A + next_index_from_A
+            next_relative_index_from_A = (i + j) % 26
+            letter_value = decimal_value_of_A + next_relative_index_from_A
             letter = chr(letter_value)
             matrix[i][j] = letter
 
 
-    string = "aBcDeF"
-    keyword = "aBc"
+    string = "ABC"
+    keyword = "XYZ"
     key = generateKey(string, keyword)
     print(key)
 
-    encoded = encodeText(string, key)
-    print(encoded)
+    encoded_text = encodeText(string, key)
+    print(encoded_text)
 
-    # print matrix
-    #print("\n".join('|'.join(row) for row in matrix))
+
+    decoded_text = decodeText(encoded_text, key)
+    print(decoded_text)
+
 
 
 if __name__ == "__main__":
