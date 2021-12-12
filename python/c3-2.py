@@ -1,3 +1,7 @@
+import argparse
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
 
 # initialize matrix 26x26, with zero
 matrix = [[0 for x in range(26)] for y in range(26)] 
@@ -103,18 +107,53 @@ def main():
             matrix[i][j] = letter
 
 
-    string = "ABC"
-    keyword = "XYZ"
+    #
+    # Parse command line
+    #
+    # To encode:
+    # $> python c3-2.py --encode <PLAIN TEXT> --key <KEY TEXT>
+    # To decode:
+    # $> python c3-2.py --decode <ENC TEXT> --key <KEY TEXT>    
+    #
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--key", required = True, help="specify key. must be only letters")
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--encode", dest='encode')
+    group.add_argument("--decode", dest='decode')
+
+    args = parser.parse_args()
+    pp.pprint(args)
+
+    key_str = str(args.key)
+    if not key_str.isalpha():
+        print("Invalid key. It only accepts letters. Exit.")
+        exit(1)
+
+    keyword = key_str.upper()
+
+    if args.encode:
+        string = str(args.encode)
+    else:
+        string = str(args.decode)
+
+
+    if not string.isalpha():
+        print("Invalid text to encode|decode. It only accepts letters. Exit.")
+        exit(1)        
+    string = string.upper()
+
     key = generateKey(string, keyword)
-    print(key)
+    print("Key: " + key)
 
-    encoded_text = encodeText(string, key)
-    print(encoded_text)
-
-
-    decoded_text = decodeText(encoded_text, key)
-    print(decoded_text)
-
+    if args.encode:
+        string = args.encode
+        encoded_text = encodeText(string, key)
+        print("Encoded text: " + encoded_text)
+    else:
+        string = args.decode
+        decoded_text = decodeText(string, key)
+        print("Decoded text: " + decoded_text)
 
 
 if __name__ == "__main__":
