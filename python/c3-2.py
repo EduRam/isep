@@ -1,7 +1,7 @@
 import argparse
-import pprint
 
-pp = pprint.PrettyPrinter(indent=4)
+#import pprint
+#pp = pprint.PrettyPrinter(indent=4)
 
 # initialize matrix 26x26, with zero
 matrix = [[0 for x in range(26)] for y in range(26)] 
@@ -15,7 +15,7 @@ decimal_value_of_A = ord('A')
 
 
 # This function generates the
-def generateKey(string, key):
+def key_padding(string, key):
 
     if len(string) == len(key):
         return(key.upper())
@@ -123,7 +123,7 @@ def main():
     group.add_argument("--decode", help="specify text to decode. must be only letters")
 
     args = parser.parse_args()
-    pp.pprint(args)
+    #pp.pprint(args)
 
     key_str = str(args.key)
     if not key_str.isalpha():
@@ -131,6 +131,11 @@ def main():
         exit(1)
 
     keyword = key_str.upper()
+
+    if all(letter == 'A' for letter in keyword):
+        print("This particular key containing only letter 'A' will not be able to encript a message. Exit.")
+        exit(1)
+
 
     if args.encode:
         string = str(args.encode)
@@ -141,18 +146,19 @@ def main():
     if not string.isalpha():
         print("Invalid text to encode|decode. It only accepts letters. Exit.")
         exit(1)        
+
     string = string.upper()
 
-    key = generateKey(string, keyword)
+    key = key_padding(string, keyword)
     print("Key: " + key)
 
     if args.encode:
         string = args.encode
-        encoded_text = encodeText(string, key)
+        encoded_text = encodeText(string.upper(), key)
         print("Encoded text: " + encoded_text)
     else:
         string = args.decode
-        decoded_text = decodeText(string, key)
+        decoded_text = decodeText(string.upper(), key)
         print("Decoded text: " + decoded_text)
 
 
